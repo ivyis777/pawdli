@@ -1,0 +1,2 @@
+/Users/ivyis/Desktop/pawli/pawlli/android/app/.cxx/Debug/b2lk5qe5/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/ivyis/Desktop/pawli/pawlli/android/app/.cxx/Debug/b2lk5qe5/armeabi-v7a/CMakeFiles/rebuild_cache.dir

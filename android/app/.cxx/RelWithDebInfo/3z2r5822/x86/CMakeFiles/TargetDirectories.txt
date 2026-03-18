@@ -1,0 +1,2 @@
+/Users/ivyis/Desktop/pawli/pawlli/android/app/.cxx/RelWithDebInfo/3z2r5822/x86/CMakeFiles/edit_cache.dir
+/Users/ivyis/Desktop/pawli/pawlli/android/app/.cxx/RelWithDebInfo/3z2r5822/x86/CMakeFiles/rebuild_cache.dir

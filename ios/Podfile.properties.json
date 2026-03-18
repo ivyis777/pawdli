@@ -1,0 +1,7 @@
+{
+    "permission_handler": {
+      "PERMISSION_CAMERA": "YES",
+      "PERMISSION_MICROPHONE": "YES"
+    }
+  }
+  

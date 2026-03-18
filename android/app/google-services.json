@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "527884979919",
+    "project_id": "pawlli-3c23e",
+    "storage_bucket": "pawlli-3c23e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:527884979919:android:fb874819f641e8dae671ba",
+        "android_client_info": {
+          "package_name": "com.ivyis.pawlli"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZv3_8k7bczkkdzAqTfRnEzk4RehbqcAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
