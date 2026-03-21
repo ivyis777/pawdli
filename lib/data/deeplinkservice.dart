@@ -24,7 +24,7 @@ class DeepLinkHandler {
       final productId = uri.queryParameters['pid'];
       if (productId != null) {
         Get.to(() => ProductDetailsScreen(
-              product: Data(storeproductId: int.parse(productId)),
+              product: StoreProductData(storeproductId: int.parse(productId)),
             ));
       }
     }

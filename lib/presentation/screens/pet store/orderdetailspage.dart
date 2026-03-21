@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pawlli/core/storage_manager/colors.dart';
 import 'package:pawlli/data/cart%20payment/storecheckoutservice.dart';
 import 'package:pawlli/data/model/ordermodel.dart';
 import 'package:pawlli/gen/assests.gen.dart';
 import 'package:pawlli/presentation/screens/pet%20store/pet_storemain.dart';
+import 'package:pawlli/presentation/widgets/bottom%20bar/bottombar.dart';
 
 class OrderDetailsPage extends StatefulWidget {
   final Order order;
@@ -258,13 +260,40 @@ appBar: PreferredSize(
                       // ⭐ Product Image
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          item.productImages.first,
-                          height: 70,
-                          width: 70,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.broken_image, size: 40),
+                        child: Builder(
+                          builder: (_) {
+                            String imageUrl = "";
+
+                            // ✅ 1. Variant images
+                            if (item.variantImages.isNotEmpty) {
+                              imageUrl = item.variantImages.first;
+                            }
+
+                            // ✅ 2. Single product image
+                            else if (item.productImage != null &&
+                                item.productImage!.isNotEmpty) {
+                              imageUrl = item.productImage!;
+                            }
+
+                            // ✅ 3. Product images list
+                            else if (item.productImages.isNotEmpty) {
+                              imageUrl = item.productImages.first;
+                            }
+
+                            // ✅ 4. fallback
+                            else {
+                              imageUrl = "https://picsum.photos/80";
+                            }
+
+                            return Image.network(
+                              imageUrl,
+                              height: 70,
+                              width: 70,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.broken_image, size: 40),
+                            );
+                          },
                         ),
                       ),
 
@@ -325,7 +354,11 @@ appBar: PreferredSize(
             // Payment and Order Info
             _infoRow("Order Status", currentStatus),
             _infoRow("Amount Paid", "₹${widget.order.finalAmount}"),
-            _infoRow("Order Date", widget.order.createdAt.toString()),
+            _infoRow(
+              "Order Date",
+              DateFormat("dd MMM yyyy, hh:mm a")
+                  .format(widget.order.createdAt.toLocal()),
+            ),
             const SizedBox(height: 20),
 
             Divider(),
@@ -352,7 +385,7 @@ appBar: PreferredSize(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => PetstorePage()),
+                      MaterialPageRoute(builder: (_) => MainLayout()),
                       
                     );
                   },
@@ -363,7 +396,7 @@ appBar: PreferredSize(
                     ),
                   ),
                   child: const Text(
-                    "Continue shopping...",
+                    "Goto home...",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),

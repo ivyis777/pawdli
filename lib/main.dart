@@ -16,6 +16,7 @@ import 'package:pawlli/data/controller/petslistcontroller.dart';
 import 'package:pawlli/data/controller/reelitemcontroller.dart';
 import 'package:pawlli/data/controller/signcontroller.dart';
 import 'package:pawlli/data/controller/storecheckoutcontroller.dart';
+import 'package:pawlli/data/controller/storesearchcontroller.dart';
 
 import 'package:pawlli/data/controller/walletbalancecontroller.dart';
 import 'package:pawlli/data/controller/transactioncontroller.dart';
@@ -77,6 +78,7 @@ void main() async {
   Get.putAsync(() => PaymentService().init(), permanent: true);
   Get.put(CompetitionController(), permanent: true);
   Get.put(StoreCheckoutController(), permanent: true);
+  Get.put(StoreSearchController(), permanent: true);
 
 
 

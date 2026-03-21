@@ -54,6 +54,7 @@ class AppUrl {
   static String petstorecategariesURL= "$mainURL/user/all_storecategorieslist/";
   static String petstoresubcategariesURL= "$mainURL/user/storesubcategories/";
   static String petStoreProductCategaryURL = "$mainURL/user/storeproducts/subcategory/";
+  static String petStoreSearchURL = "$mainURL/user/store/search/";
   static String cartViewURL = "$mainURL/user/cart/list";
   static String addCartURL = "$mainURL/user/cart/add/";
   static String cartupdateURL = "$mainURL/user/cart/update/";

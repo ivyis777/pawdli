@@ -7,10 +7,10 @@ import 'package:pawlli/data/model/productVariantmodel.dart';
 import 'package:pawlli/gen/assests.gen.dart';
 import 'package:pawlli/presentation/screens/pet%20store/pet_cart.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../../data/model/storeprocductmodel.dart' show Data, SelectedVariant;
+import '../../../data/model/storeprocductmodel.dart' show Data, SelectedVariant, StoreProductData;
 
 class ProductDetailsScreen extends StatefulWidget {
-  final Data product;
+  final StoreProductData product;
   // final productId = productId;
 
   const ProductDetailsScreen({Key? key, required this.product}) : super(key: key);

@@ -51,6 +51,7 @@ import 'package:pawlli/data/model/reelitemmodel.dart';
 import 'package:pawlli/data/model/singledescriptionmodel.dart';
 import 'package:pawlli/data/model/slotcreationmodel.dart'as slot;
 import 'package:pawlli/data/model/storeprocductmodel.dart' hide Data;
+import 'package:pawlli/data/model/storesearchmodel.dart';
 import 'package:pawlli/data/model/subcategarymodel.dart' as sub;
 import 'package:pawlli/data/model/therapyslot.dart';
 import 'package:pawlli/data/model/topupmodel.dart';
@@ -1283,6 +1284,37 @@ static Future<List<PromotionModel>> fetchPromotions() async {
   }
 
   return [];
+}
+
+static Future<List<StoreProductData>> searchStoreProducts(String query) async {
+  try {
+    final token = LocalStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse("${AppUrl.petStoreSearchURL}?q=$query"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+
+      print("RAW Search JSON: $jsonData");
+
+      final List results = jsonData['results'];
+
+      return results
+          .map((e) => StoreProductData.fromJson(e))
+          .toList();
+    } else {
+      return [];
+    }
+  } catch (e) {
+    debugPrint("Search API Error: $e");
+    return [];
+  }
 }
 
 
@@ -3474,7 +3506,7 @@ static Future<List<categoryModel.Data>> fetchPetStoreCategories() async {
   }
 }
 
- static Future<List<productModel.Data>> fetchProducts(int subCategoryId) async {
+ static Future<List<productModel.StoreProductData>> fetchProducts(int subCategoryId) async {
   try {
     String? accessToken = await getAccessToken();
     if (accessToken == null) throw Exception("Authorization failed");
@@ -3511,7 +3543,7 @@ static Future<List<categoryModel.Data>> fetchPetStoreCategories() async {
 
       // ✅ FINAL SAFE CONVERSION
       return rawList
-          .map((e) => productModel.Data.fromJson(e))
+          .map((e) => productModel.StoreProductData.fromJson(e))
           .toList();
     }
 

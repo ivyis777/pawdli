@@ -10,10 +10,10 @@ class StoreProductController extends GetxController {
   var isLoading = false.obs;
 
   // original full list from API
-  var productList = <Data>[].obs;
+  var productList = <StoreProductData>[].obs;
 
   // filtered + sorted list exposed to UI
-  var filteredList = <Data>[].obs;
+  var filteredList = <StoreProductData>[].obs;
 
   var variantList = <StoreProductVariant>[].obs;
   var selectedSubCategoryName = ''.obs;
@@ -80,7 +80,7 @@ void search(String query) {
   // SORT FUNCTION
   // ================================
   void sortProducts(String type) {
-    List<Data> temp = [...filteredList];
+    List<StoreProductData> temp = [...filteredList];
 
     switch (type) {
       case "Popular":
@@ -129,7 +129,7 @@ void search(String query) {
   // ================================
   // HELPERS
   // ================================
-  double _price(Data p) {
+  double _price(StoreProductData p) {
     // prefer discountedPrice if present
     final raw = p.discountedPrice?.isNotEmpty == true
         ? p.discountedPrice

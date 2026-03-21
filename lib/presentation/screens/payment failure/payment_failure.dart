@@ -3,7 +3,7 @@ import 'package:pawlli/core/storage_manager/colors.dart';
 import 'package:pawlli/data/model/paymentverificationmodel.dart';
 import 'package:pawlli/gen/assests.gen.dart';
 import 'package:pawlli/gen/fonts.gen.dart';
-import 'package:pawlli/presentation/screens/walletpage/walletpage.dart';
+import 'package:pawlli/presentation/widgets/bottom%20bar/bottombar.dart';
 class Paymentfailure extends StatefulWidget {
   final String orderId;
   final String paymentId;
@@ -153,34 +153,34 @@ return Scaffold(
                       _buildInfoRow('Payment Method:', paymentMethod, screenHeight),
                       SizedBox(height: screenHeight * 0.017),
                       Align(
-  alignment: Alignment.center, // Moves the button towards the right
-  child: ElevatedButton(
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MyWalletPage( fromPaymentFlow: true),
-        ),
-      );
-    },
-    style: ElevatedButton.styleFrom(
-      fixedSize: Size(screenWidth * 0.8, screenHeight * 0.07),
-      backgroundColor: Colours.primarycolour,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-    ),
-    child: Text(
-      "Retry",
-      style: TextStyle(
-        fontSize: screenHeight * 0.025,
-        fontWeight: FontWeight.w600,
-        color: Colours.secondarycolour,
-      ),
-    ),
-  ),
-)  ,     SizedBox(height: screenHeight * 0.017),
-
+                        alignment: Alignment.center, // Moves the button towards the right
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MainLayout(),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: Size(screenWidth * 0.8, screenHeight * 0.07),
+                            backgroundColor: Colours.primarycolour,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            "Retry",
+                            style: TextStyle(
+                              fontSize: screenHeight * 0.025,
+                              fontWeight: FontWeight.w600,
+                              color: Colours.secondarycolour,
+                            ),
+                          ),
+                        ),
+                      )  ,     
+                      SizedBox(height: screenHeight * 0.017),
                     ],
                   ),
                 ),

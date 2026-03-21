@@ -1,7 +1,7 @@
 
 class StoreProductModel {
   String? message;
-  List<Data>? data;
+  List<StoreProductData>? data;
   int? status;
   int totalStock = 0;
   
@@ -15,7 +15,7 @@ class StoreProductModel {
     final rawData = json['data'];
 
     if (rawData is List) {
-      data = rawData.map((e) => Data.fromJson(e)).toList();
+      data = rawData.map((e) => StoreProductData.fromJson(e)).toList();
     } else {
       // SAFETY: backend sent wrong structure
       data = [];
@@ -34,7 +34,7 @@ class StoreProductModel {
   }
 }
 
-class Data {
+class StoreProductData {
   int? storeproductId;
   int? selectedVariant;
   String? productName;
@@ -61,11 +61,12 @@ class Data {
   String? createdAt;
   String? updatedAt;
   CheapestVariant? cheapestVariant;
+  List<CheapestVariant>? variants;
   bool? isOutOfStock;
 
 
 
-  Data({
+  StoreProductData({
     this.storeproductId,
     this.selectedVariant,
     this.productName,
@@ -92,33 +93,36 @@ class Data {
     this.createdAt,
     this.updatedAt,
     this.cheapestVariant,
-    this.isOutOfStock
+    this.variants,
+    this.isOutOfStock, int? id
   });
 
-  Data.fromJson(Map<String, dynamic> json) {
-    storeproductId = json['storeproduct_id'];
-    selectedVariant = json['selected_variant'];
+  StoreProductData.fromJson(Map<String, dynamic> json) {
+    storeproductId = int.tryParse(json['storeproduct_id']?.toString() ?? '0');
+    selectedVariant = int.tryParse(json['selected_variant']?.toString() ?? '0');
     productName = json['product_name'];
     productSlug = json['product_slug'];
     productDescription = json['product_description'];
     productShortDescription = json['product_short_description'];
 
-    // ✅ HANDLE BOTH product_image (single) + product_images (list)
-
-if (json['product_images'] != null && json['product_images'] is List) {
-  productImages = List<String>.from(json['product_images']);
-} 
-else if (json['product_image'] != null) {
-  productImages = [json['product_image']]; // convert single → list
-} 
-else {
-  productImages = [];
-}
+    // ✅ HANDLE ALL IMAGE CASES (FINAL FIX)
+    if (json['product_images'] != null && json['product_images'] is List) {
+      productImages = List<String>.from(json['product_images']);
+    } 
+    else if (json['product_image'] != null && json['product_image'].toString().isNotEmpty) {
+      productImages = [json['product_image']];
+    } 
+    else if (json['image'] != null && json['image'].toString().isNotEmpty) {
+      productImages = [json['image']]; // ✅ NEW FIX
+    } 
+    else {
+      productImages = [];
+    }
 
     stockKeepingUnit = json['stock_keeping_unit'];
     regularPrice = json['regular_price'];
     discountedPrice = json['discounted_price'];
-    stockQuantity = json['stock_quantity'];
+    stockQuantity = int.tryParse(json['stock_quantity']?.toString() ?? '0');
     productWeightKg = json['product_weight_kg'];
     productDimensionsCm = json['product_dimensions_cm'];
     productBrand = json['product_brand'];
@@ -140,16 +144,24 @@ else {
     isFeatured = json['is_featured'];
     seoMetaTitle = json['seo_meta_title'];
     seoMetaDescription = json['seo_meta_description'];
-    storeCategory = json['store_category'];
-    storeSubcategory = json['store_subcategory'];
+    storeCategory = int.tryParse(json['store_category']?.toString() ?? '0');
+    storeSubcategory = int.tryParse(json['store_subcategory']?.toString() ?? '0');
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
 
     if (json['cheapest_variant'] != null) {
-      cheapestVariant =
-          CheapestVariant.fromJson(json['cheapest_variant']);
+      cheapestVariant = CheapestVariant.fromJson(
+        Map<String, dynamic>.from(json['cheapest_variant']),
+      );
     }
-    isOutOfStock = json['is_out_of_stock'];
+    if (json['variants'] != null && json['variants'] is List) {
+      variants = (json['variants'] as List)
+          .map((e) => CheapestVariant.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ))
+          .toList();
+    }
+    isOutOfStock = json['is_out_of_stock'] == true;
 
   }
 
@@ -188,21 +200,29 @@ else {
   }
 
   double get displayPrice {
-  if (cheapestVariant != null) {
-    return cheapestVariant!.discountedPrice ??
-           cheapestVariant!.regularPrice;
+    if (cheapestVariant != null) {
+      return cheapestVariant!.discountedPrice ??
+            cheapestVariant!.regularPrice;
+    }
+
+    // fallback (safety)
+    return double.tryParse(discountedPrice ?? regularPrice ?? '0') ?? 0;
   }
 
-  // fallback (safety)
-  return double.tryParse(discountedPrice ?? regularPrice ?? '0') ?? 0;
-}
+  bool get hasDiscount {
+    if (cheapestVariant == null) return false;
 
-bool get hasDiscount {
-  if (cheapestVariant == null) return false;
+    final d = cheapestVariant!.discountedPrice;
+    return d != null && d < cheapestVariant!.regularPrice;
+  }
 
-  final d = cheapestVariant!.discountedPrice;
-  return d != null && d < cheapestVariant!.regularPrice;
-}
+  double get originalPrice {
+    if (cheapestVariant != null) {
+      return cheapestVariant!.regularPrice;
+    }
+
+    return double.tryParse(regularPrice ?? '0') ?? 0;
+  }
 
 }
 
@@ -223,9 +243,12 @@ class CheapestVariant {
     return CheapestVariant(
       variantId: json['variant_id'],
       variantName: json['variant_name'],
-      regularPrice: (json['regular_price'] as num).toDouble(),
+
+      // ✅ FIXED
+      regularPrice: double.tryParse(json['regular_price'].toString()) ?? 0,
+
       discountedPrice: json['discounted_price'] != null
-          ? (json['discounted_price'] as num).toDouble()
+          ? double.tryParse(json['discounted_price'].toString())
           : null,
     );
   }

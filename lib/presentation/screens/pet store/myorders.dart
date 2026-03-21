@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pawlli/core/storage_manager/colors.dart';
 import 'package:pawlli/data/controller/myordercontroller.dart';
 import 'package:pawlli/data/model/ordermodel.dart';
 import 'package:pawlli/gen/assests.gen.dart';
@@ -31,7 +32,7 @@ final MyOrdersController controller = Get.find<MyOrdersController>();
             left: 0,
             child: Container(
               width: MediaQuery.of(context).size.width * 0.55,
-              height: 80,
+              height: 90,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(Assets.images.topimage.path),
@@ -44,9 +45,9 @@ final MyOrdersController controller = Get.find<MyOrdersController>();
           // ✅ APP BAR ON TOP (Back button + title visible)
           AppBar(
             centerTitle: true,
-            elevation: 0,
+            elevation: 5,
             backgroundColor: Colors.transparent, // IMPORTANT
-            foregroundColor: Colors.black,
+            foregroundColor: Colours.brownColour,
 
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
@@ -84,7 +85,7 @@ final MyOrdersController controller = Get.find<MyOrdersController>();
 
       return ListView.builder(
         itemCount: controller.filteredOrders.length,
-        itemBuilder: (_, i) => _orderCard(controller.filteredOrders[i]),
+        itemBuilder: (context, i) => _orderCard(controller.filteredOrders[i], context),
       );
     });
   }
@@ -123,7 +124,7 @@ final MyOrdersController controller = Get.find<MyOrdersController>();
     return order.orderStatus.capitalize ?? "Pending";
   }
 
-Widget _orderCard(Order order) {
+Widget _orderCard(Order order, BuildContext context) {
   final item = order.items.first;
 
   return GestureDetector(
@@ -138,95 +139,103 @@ Widget _orderCard(Order order) {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // PRODUCT IMAGE
-            // PRODUCT IMAGE
-ClipRRect(
-  borderRadius: BorderRadius.circular(10),
-  child: Builder(
-  builder: (_) {
-    String imageUrl = "";
 
-    // ✅ 1. Variant images
-    if (item.variantImages.isNotEmpty) {
-      imageUrl = item.variantImages.first;
-    }
+            // IMAGE
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Builder(
+                builder: (_) {
+                  String imageUrl = "";
 
-    // ✅ 2. Single product image (NOW WORKS)
-    else if (item.productImage != null &&
-        item.productImage!.isNotEmpty) {
-      imageUrl = item.productImage!;
-    }
+                  if (item.variantImages.isNotEmpty) {
+                    imageUrl = item.variantImages.first;
+                  } else if (item.productImage != null &&
+                      item.productImage!.isNotEmpty) {
+                    imageUrl = item.productImage!;
+                  } else if (item.productImages.isNotEmpty) {
+                    imageUrl = item.productImages.first;
+                  } else {
+                    imageUrl = "https://picsum.photos/80";
+                  }
 
-    // ✅ 3. Product images list
-    else if (item.productImages.isNotEmpty) {
-      imageUrl = item.productImages.first;
-    }
-
-    // ✅ 4. Safe fallback
-    else {
-      imageUrl = "https://picsum.photos/80";
-    }
-
-    return Image.network(
-      imageUrl,
-      height: 80,
-      width: 80,
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) {
-        return Container(
-          height: 80,
-          width: 80,
-          color: Colors.grey[200],
-          child: const Icon(Icons.image_not_supported),
-        );
-      },
-    );
-  },
-),
-),
+                  return Image.network(
+                    imageUrl,
+                    height: 90,
+                    width: 90,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) {
+                      return Container(
+                        height: 100,
+                        width: 100,
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.image_not_supported),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
 
             const SizedBox(width: 12),
 
-            // ORDER DETAILS
+            // RIGHT SIDE
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    item.productName,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style:
-                        const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 6),
-                  Text("Order #${order.orderId}",
-                      style: TextStyle(color: Colors.grey[700])),
-                  Text("Variant: ${item.variantName}",
-                      style: TextStyle(color: Colors.grey[700])),
-                  Text("Amount: ₹${order.finalAmount}",
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 14)),
-                ],
-              ),
-            ),
 
-            // STATUS BADGE
-            Flexible(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                decoration: BoxDecoration(
-                  color: _statusColor(getDisplayStatus(order)),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  getDisplayStatus(order),
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                  // 🔥 TOP ROW (TITLE + STATUS)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.productName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      // ✅ STATUS BADGE (NO OVERLAP EVER)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 6, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: _statusColor(getDisplayStatus(order)),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          getDisplayStatus(order),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+
+                  const SizedBox(height: 5),
+
+                  Text(
+                    "Order: ${order.orderId}",
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    "Amount: ₹${order.finalAmount}",
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w500, fontSize: 13),
+                  ),
+                ],
               ),
             ),
           ],

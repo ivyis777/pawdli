@@ -4,23 +4,25 @@ import 'package:pawlli/core/storage_manager/colors.dart';
 import 'package:pawlli/core/storage_manager/store_like.dart';
 import 'package:pawlli/data/controller/cartviewcontroller.dart';
 import 'package:pawlli/data/controller/storeproductcontroller.dart';
+import 'package:pawlli/data/controller/storesearchcontroller.dart';
 import 'package:pawlli/gen/assests.gen.dart';
 import 'package:pawlli/presentation/screens/pet store/pet_storeproduct.dart';
 import 'package:pawlli/presentation/screens/pet%20store/pet_cart.dart';
 
 class ProductListScreen extends StatefulWidget {
   final int? storeSubcategoryId;
+  final String? searchQuery;   
 
-  const ProductListScreen({Key? key, this.storeSubcategoryId}) : super(key: key);
+  const ProductListScreen({Key? key, this.storeSubcategoryId,this.searchQuery,}) : super(key: key);
 
   @override
   State<ProductListScreen> createState() => _ProductListScreenState();
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  final StoreProductController controller = Get.put(StoreProductController());
+  final StoreProductController controller = Get.find<StoreProductController>();
   final StoreProductController storeProductController = Get.find();
-
+  final StoreSearchController searchController = Get.find<StoreSearchController>(); // ✅ ADD THIS
   String selectedSort = "Popular";
 
   final List<String> sortOptions = [
@@ -120,16 +122,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppBar(
-                  title: Obx(() => Text(
-                        storeProductController.selectedSubCategoryName.value.isEmpty
+                  title: Text(
+                    widget.searchQuery != null && widget.searchQuery!.isNotEmpty
+                        ? widget.searchQuery!   // ✅ SHOW SEARCH TEXT
+                        : (storeProductController.selectedSubCategoryName.value.isEmpty
                             ? "Products"
-                            : storeProductController.selectedSubCategoryName.value,
-                        style: TextStyle(
-                          fontSize: screenHeight * 0.03,
-                          fontWeight: FontWeight.w600,
-                          color: Colours.brownColour,
-                        ),
-                      )),
+                            : storeProductController.selectedSubCategoryName.value),
+                    style: TextStyle(
+                      fontSize: screenHeight * 0.03,
+                      fontWeight: FontWeight.w600,
+                      color: Colours.brownColour,
+                    ),
+                  ),
                   centerTitle: true,
                   backgroundColor: Colors.transparent,
                   foregroundColor: Colours.brownColour,
@@ -229,17 +233,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   padding: const EdgeInsets.all(16),
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: controller.filteredList.length,
+
+                  itemCount: widget.searchQuery != null
+                      ? searchController.products.length
+                      : controller.filteredList.length,
+
                   itemBuilder: (context, index) {
-                    final p = controller.filteredList[index];
+
+                    final p = widget.searchQuery != null
+                        ? searchController.products[index]
+                        : controller.filteredList[index];
 
                     final bool isOutOfStock = p.isOutOfStock ?? false;
 
-
                     final image =
                         p.productImages?.isNotEmpty == true ? p.productImages!.first : "";
-                                            
-                    // ✅ PRICE FROM CHEAPEST VARIANT (NEW BACKEND)
+
+                    // ✅ CHEAPEST VARIANT PRICE
                     final cheapest = p.cheapestVariant;
 
                     final double sellingPriceValue =
@@ -265,11 +275,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     final String sellingPrice =
                         sellingPriceValue.toStringAsFixed(0);
 
-                    debugPrint(
-                      "🧪 PRODUCT ${p.productName} → cheapestVariant=${p.cheapestVariant}, "
-                      "discounted=${p.discountedPrice}, regular=${p.regularPrice}"
-                    );
-
                     return _buildProductCard(
                       image,
                       p.productName ?? "",
@@ -278,17 +283,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       p.isFeatured == true ? "⭐ Featured" : "⭐ Popular",
                       productId: p.storeproductId,
                       regularPrice: regularPriceValue.toStringAsFixed(0),
-                      hasDiscount: hasDiscount && !isOutOfStock, // 🔥 hide discount if OOS
+                      hasDiscount: hasDiscount && !isOutOfStock,
                       discountPercent: discountPercent,
-                      isOutOfStock: isOutOfStock, // 🔥 ADD THIS
+                      isOutOfStock: isOutOfStock,
                       onTap: () {
-                        // if (isOutOfStock) {
-                        //   ScaffoldMessenger.of(context).showSnackBar(
-                        //     const SnackBar(
-                        //       content: Text("This product is currently out of stock"),
-                        //     ),
-                        //   );
-                        // }
                         Navigator.push(
                           context,
                           MaterialPageRoute(

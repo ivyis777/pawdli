@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -8,7 +7,6 @@ import 'package:pawlli/data/controller/competition_controller.dart';
 import 'package:pawlli/data/controller/getuserprofilecontroller.dart';
 import 'package:pawlli/data/controller/petslistcontroller.dart';
 import 'package:pawlli/data/controller/reelitemcontroller.dart';
-import 'package:pawlli/data/controller/updateuserprofilecontroller.dart';
 import 'package:pawlli/gen/assests.gen.dart'; 
 import 'package:pawlli/gen/fonts.gen.dart';
 import 'package:pawlli/presentation/screens/Pet%20Adoption/pet_adt_view.dart';
@@ -30,13 +28,13 @@ import 'package:get/get.dart';
 class MarqueeText extends StatefulWidget {
   final String text;
   final TextStyle style;
-  final double speed; // 👈 REAL speed (px per frame)
+  final double speed; 
 
   const MarqueeText({
     super.key,
     required this.text,
     required this.style,
-    this.speed = 0.001, // 👈 slow & smooth
+    this.speed = 0.001,
   });
 
   @override
@@ -57,7 +55,7 @@ class _MarqueeTextState extends State<MarqueeText> {
     if (!_controller.hasClients) return;
 
     final maxScroll = _controller.position.maxScrollExtent;
-    if (maxScroll <= 0) return; // no overflow → no marquee
+    if (maxScroll <= 0) return;
 
     _timer = Timer.periodic(const Duration(milliseconds: 16), (_) {
       if (!_controller.hasClients) return;
@@ -65,7 +63,7 @@ class _MarqueeTextState extends State<MarqueeText> {
       final next = _controller.offset + widget.speed;
 
       if (next >= maxScroll) {
-        _controller.jumpTo(0); // restart cleanly
+        _controller.jumpTo(0);
       } else {
         _controller.jumpTo(next);
       }
