@@ -11,7 +11,7 @@ import 'package:pawlli/presentation/screens/pet%20store/pet_cart.dart';
 
 class ProductListScreen extends StatefulWidget {
   final int? storeSubcategoryId;
-  final String? searchQuery;   
+  final String? searchQuery;
 
   const ProductListScreen({Key? key, this.storeSubcategoryId,this.searchQuery,}) : super(key: key);
 

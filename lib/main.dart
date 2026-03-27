@@ -17,12 +17,10 @@ import 'package:pawlli/data/controller/reelitemcontroller.dart';
 import 'package:pawlli/data/controller/signcontroller.dart';
 import 'package:pawlli/data/controller/storecheckoutcontroller.dart';
 import 'package:pawlli/data/controller/storesearchcontroller.dart';
-
 import 'package:pawlli/data/controller/walletbalancecontroller.dart';
 import 'package:pawlli/data/controller/transactioncontroller.dart';
 import 'package:pawlli/data/controller/addresscontroller.dart';
 import 'package:pawlli/data/notification_service.dart';
-
 import 'package:pawlli/presentation/screens/loginpage/loginpage.dart';
 import 'package:pawlli/presentation/screens/splashcreen/splashscreen.dart';
 import 'package:get_storage/get_storage.dart';
@@ -44,7 +42,7 @@ void main() async {
   await NotificationService.init();
 
 
-  setupFCM();
+  await setupFCM();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // 🟢 Your existing controllers
@@ -82,30 +80,34 @@ void main() async {
 
 
 
-  final token = await FirebaseMessaging.instance.getToken();
-  print("🔥 FCM TOKEN: $token");
+  // final token = await FirebaseMessaging.instance.getToken();
+  // print("🔥 FCM TOKEN: $token");
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-  debugPrint('📲 OPENED FROM NOTIFICATION');
-  debugPrint('🧾 message.data = ${message.data}');
-  debugPrint('🧾 message.notification = ${message.notification}');
-});
+      debugPrint('📲 OPENED FROM NOTIFICATION');
+      debugPrint('🧾 message.data = ${message.data}');
+      debugPrint('🧾 message.notification = ${message.notification}');
+    });
 
 
-FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  debugPrint('🔔 ON MESSAGE (FOREGROUND)');
-  debugPrint('🧾 message.data = ${message.data}');
-  debugPrint('🧾 message.notification = ${message.notification}');
-  debugPrint('🧾 title = ${message.notification?.title}');
-  debugPrint('🧾 body = ${message.notification?.body}');
-});
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint('🔔 ON MESSAGE (FOREGROUND)');
+      debugPrint('🧾 message.data = ${message.data}');
+      debugPrint('🧾 message.notification = ${message.notification}');
+      debugPrint('🧾 title = ${message.notification?.title}');
+      debugPrint('🧾 body = ${message.notification?.body}');
+    });
 
-  FirebaseMessaging.onBackgroundMessage(
-firebaseMessagingBackgroundHandler,
-);
+    FirebaseMessaging.onBackgroundMessage(
+      firebaseMessagingBackgroundHandler,
+      );
 
 
   runApp(const MyApp());
+
+  Future.delayed(const Duration(seconds: 2), () {
+  setupFCM();
+});
 }
 
 

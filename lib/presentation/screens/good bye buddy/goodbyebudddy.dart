@@ -20,6 +20,7 @@ import 'package:get/get.dart';
 import 'package:pawlli/gen/fonts.gen.dart';
 import 'package:pawlli/presentation/screens/good%20bye%20buddy/superuserdetailspage.dart';
 import 'package:pawlli/presentation/screens/good%20bye%20buddy/userdetailspage.dart';
+import 'package:pawlli/presentation/widgets/bottom%20bar/bottombar.dart';
 
 
 class Goodbyebudddy extends StatefulWidget {
@@ -699,7 +700,7 @@ Widget build(BuildContext context) {
   leading: IconButton(
     icon: Icon(Icons.arrow_back, color: Colours.brownColour),
     onPressed: () {
-      Get.back();
+      Get.offAll(() => MainLayout());
     },
   ),
 
@@ -1034,7 +1035,7 @@ Widget build(BuildContext context) {
                                 child: Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xfff2e1c6),
+                                    color: const Color.fromARGB(255, 251, 236, 210),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Column(

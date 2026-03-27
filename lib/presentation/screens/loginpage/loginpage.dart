@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pawlli/core/form_validation/form_validation.dart';
@@ -38,11 +39,16 @@ late final OtpController otpController;
   bool _isGetOtpButtonDisabled = false;
   bool _isResendOtpButtonDisabled = false;
   bool _isInitialOtpRequest = true; 
+  final FocusNode _hiddenFocus = FocusNode();
 
     @override
 void initState() {
   super.initState();
-  otpController = Get.find<OtpController>(); // ✅ CREATE AGAIN AFTER LOGOUT
+  otpController = Get.find<OtpController>(); 
+
+   Future.delayed(Duration(milliseconds: 300), () {
+    _hiddenFocus.requestFocus();
+  });
 }
 
   void _startTimer() {
@@ -71,6 +77,23 @@ void initState() {
     });
   }
 
+  void _handleAutoFill(String code) {
+  print("RAW OTP: $code");
+
+  // remove non-digits (safety)
+  code = code.replaceAll(RegExp(r'[^0-9]'), '');
+
+  // fix leading zero issue
+  code = code.padLeft(4, '0');
+
+  print("FINAL OTP: $code");
+
+  for (int i = 0; i < 4; i++) {
+    otpControllers[i].text = code[i];
+  }
+
+  FocusScope.of(context).requestFocus(focusNodes[3]);
+}
   
   @override
   void dispose() {
@@ -78,6 +101,7 @@ void initState() {
     _otpController.dispose();
     otpControllers.forEach((controller) => controller.dispose());
     focusNodes.forEach((node) => node.dispose());
+    _hiddenFocus.dispose(); 
     super.dispose();
   }
 
@@ -88,6 +112,7 @@ Widget build(BuildContext context) {
   final isSmallScreen = screenWidth < 600;
 
   return Scaffold(
+
       resizeToAvoidBottomInset: false, 
     backgroundColor: Colours.secondarycolour,
     body: Commonui(
@@ -272,6 +297,26 @@ Widget build(BuildContext context) {
                               ),
                               SizedBox(height: 1),
 
+                              Opacity(
+                                opacity: 0.01,
+                                child: SizedBox(
+                                  height: 1,
+                                  // child: TextField(
+                                  //   controller: _otpController,
+                                  //   focusNode: _hiddenFocus,
+                                  //   keyboardType: TextInputType.number,
+                                  //   autofillHints: const [AutofillHints.oneTimeCode],
+                                  //   style: const TextStyle(fontSize: 1),
+                                  //   decoration: const InputDecoration(
+                                  //     border: InputBorder.none,
+                                  //     contentPadding: EdgeInsets.zero,
+                                  //   ),
+                                  //   onChanged: (value) {
+                                  //     _handleAutoFill(value);
+                                  //   },
+                                  // ),
+                                ),
+                              ),
                               // OTP Input
                               _buildOTPInputGrid(),
 
@@ -384,24 +429,36 @@ Widget build(BuildContext context) {
                             }
                           },
                             child: _isProcessing
-                                ? CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colours.secondarycolour),
-                                  )
-                                : Text(
-                                    "Login",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: FontFamily.Ubantu,
-                                      color: Colours.secondarycolour,
+                              ? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colours.secondarycolour),
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.email_outlined, // 📧 email icon
+                                      // color: Colours.secondarycolour,
+                                      size: 25,
                                     ),
-                                  ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      "Login with Email",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: FontFamily.Ubantu,
+                                        // color: Colours.secondarycolour,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                             style: ElevatedButton.styleFrom(
                               fixedSize: Size(
-                                screenWidth * (isSmallScreen ? 0.6 : 0.4),
-                                56,
+                                screenWidth * (isSmallScreen ? 0.8 : 0.4),
+                                50,
                               ),
                               backgroundColor: Colours.brownColour,
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
@@ -409,9 +466,88 @@ Widget build(BuildContext context) {
                           ),
                         ),
 
+                        SizedBox(height: 15),
 
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            final result = await logincontroller.loginWithGoogle();
 
-                              SizedBox(height: 9),
+                            print("GOOGLE RESULT: ${result.success}");
+
+                            if (result.success) {
+                              Get.offAll(() => MainLayout()); // 👈 move FIRST
+                            }
+
+                            Get.snackbar(
+                              result.success ? "Success" : "Error",
+                              result.message,
+                              snackPosition: SnackPosition.TOP,
+                            );
+                          },
+                          icon: Image.asset(
+                            'assets/images/google.png',
+                            height: 24,
+                          ),
+                          label: Text(" Continue with Google", style: TextStyle(fontSize: 16, fontFamily: FontFamily.Ubantu, fontWeight: FontWeight.w500),),
+                          style: ElevatedButton.styleFrom(
+                              fixedSize: Size(
+                                screenWidth * (isSmallScreen ? 0.8 : 0.4),
+                                50,
+                              ),
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                        ),
+
+                              // SizedBox(height: 15),
+
+                              // if (GetPlatform.isIOS) 
+                              //   ElevatedButton.icon(
+                              //   onPressed: () async {
+                              //     print("🍎 ===============================");
+                              //     print("🍎 Apple Button Clicked");
+
+                              //     final result = await logincontroller.loginWithApple();
+
+                              //     print("🍎 RESULT SUCCESS: ${result.success}");
+                              //     print("🍎 RESULT MESSAGE: ${result.message}");
+                              //     print("🍎 ===============================");
+
+                              //     if (result.success) {
+                              //       print("🍎 Navigating to MainLayout");
+                              //       Get.offAll(() => MainLayout());
+                              //     } else {
+                              //       print("🍎 Showing error snackbar");
+
+                              //       Get.snackbar(
+                              //         "Error",
+                              //         result.message,
+                              //         snackPosition: SnackPosition.TOP,
+                              //       );
+                              //     }
+                              //   },
+                              //     icon: Icon(Icons.apple, size: 35),
+                              //     label: Text(
+                              //       "Continue with Apple",
+                              //       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                              //     ),
+                              //     style: ElevatedButton.styleFrom(
+                              //       fixedSize: Size(
+                              //         screenWidth * (isSmallScreen ? 0.8 : 0.4),
+                              //         50,
+                              //       ),
+                              //       backgroundColor: Colors.black,
+                              //       foregroundColor: Colors.white,
+                              //       shape: RoundedRectangleBorder(
+                              //         borderRadius: BorderRadius.circular(15),
+                              //       ),
+                              //     ),
+                              //   ),
+
+                                SizedBox(height: 15),
 
                               // // Sign Up Section
                               // Row(
@@ -526,9 +662,6 @@ Widget build(BuildContext context) {
   );
 }
 
-
-
-
   Widget _buildOTPInputGrid() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -542,14 +675,36 @@ Widget build(BuildContext context) {
             focusNode: focusNodes[index],
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
-            maxLength: 1,
+            textInputAction: TextInputAction.next,
+            maxLength: 4,
+
             onChanged: (value) {
-              if (value.isNotEmpty && index < 3) {
-                FocusScope.of(context).requestFocus(focusNodes[index + 1]);
-              } else if (value.isEmpty && index > 0) {
-                FocusScope.of(context).requestFocus(focusNodes[index - 1]);
+              // 🔥 HANDLE FULL OTP PASTE (MAIN FIX)
+              if (value.length > 1) {
+                String code = value.replaceAll(RegExp(r'[^0-9]'), '');
+                code = code.padLeft(4, '0');
+
+                for (int i = 0; i < 4; i++) {
+                  otpControllers[i].text = code[i];
+                }
+
+                FocusScope.of(context).unfocus(); // ✅ HIDE KEYBOARD
+                return;
               }
+
+              // 🔥 NORMAL TYPING
+                if (value.isNotEmpty) {
+                  if (index < 3) {
+                    FocusScope.of(context).requestFocus(focusNodes[index + 1]);
+                  } else {
+                    // ✅ LAST BOX → HIDE KEYBOARD
+                    FocusScope.of(context).unfocus();
+                  }
+                } else if (value.isEmpty && index > 0) {
+                  FocusScope.of(context).requestFocus(focusNodes[index - 1]);
+                }
             },
+
             decoration: InputDecoration(
               counterText: '',
               filled: true,

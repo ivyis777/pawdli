@@ -24,6 +24,11 @@
         android:hardwareAccelerated="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher">
+        
+        <meta-data
+            android:name="com.google.android.gms.client_id"
+            android:value="527884979919-dj63o96211l4h1j9lj5cmu5hl3k8cgkl.apps.googleusercontent.com" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

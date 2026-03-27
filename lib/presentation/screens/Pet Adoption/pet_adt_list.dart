@@ -25,11 +25,10 @@ class _AdoptionPetsState extends State<AdoptionPets> {
   @override
   void initState() {
     super.initState();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    _controller.fetchUserAdoptionPetList();
-  });// Fetch API on load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.fetchUserAdoptionPetList();
+    });// Fetch API on load
   }
-  
 
   @override
   Widget build(BuildContext context) {

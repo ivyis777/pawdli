@@ -12,7 +12,20 @@
           "package_name": "com.ivyis.pawlli"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "527884979919-34527sgv3q93fo3ikeb06s089l4tra51.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ivyis.pawlli",
+            "certificate_hash": "70c6c1eae6c449b4d1c2008d8d9ce72697391ab6"
+          }
+        },
+        {
+          "client_id": "527884979919-588usk26levpqn61r1j86hiknv8aq1n5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDZv3_8k7bczkkdzAqTfRnEzk4RehbqcAo"
@@ -20,7 +33,20 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "527884979919-588usk26levpqn61r1j86hiknv8aq1n5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "527884979919-dj63o96211l4h1j9lj5cmu5hl3k8cgkl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ivyis.pawlliapp",
+                "app_store_id": "6747665709"
+              }
+            }
+          ]
         }
       }
     }

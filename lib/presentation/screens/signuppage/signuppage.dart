@@ -177,7 +177,7 @@ void initState() {
 
                                               if (result.success) {
                                                 // ✅ SUCCESS → GO TO OTP PAGE
-                                                Get.to(
+                                                Get.to(() =>
                                                   OTPPage(
                                                     email: _emailController.text,
                                                     username: _nameController.text,

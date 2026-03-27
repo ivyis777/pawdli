@@ -39,11 +39,29 @@ class _OTPPageState extends State<OTPPage> {
   Timer? _timer;
   int _start = 60;
 
+  // final TextEditingController _otpController = TextEditingController();
+  // final FocusNode _hiddenFocus = FocusNode();
+
+
   @override
   void initState() {
     super.initState();
     focusNodes[0].requestFocus();
     startTimer();
+
+      Future.delayed(Duration(milliseconds: 300), () {
+      // _hiddenFocus.requestFocus();
+    });
+  }
+
+  void _handleAutoFill(String code) {
+    if (code.length == 4) {
+      for (int i = 0; i < 4; i++) {
+        otpControllers[i].text = code[i];
+      }
+
+      FocusScope.of(context).requestFocus(focusNodes[3]);
+    }
   }
 
   void startTimer() {
@@ -66,6 +84,9 @@ class _OTPPageState extends State<OTPPage> {
     for (final f in focusNodes) {
       f.dispose();
     }
+      // _otpController.dispose(); 
+      // _hiddenFocus.dispose(); 
+
     super.dispose();
   }
 
@@ -82,6 +103,7 @@ class _OTPPageState extends State<OTPPage> {
     final isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false, 
       backgroundColor: Colours.secondarycolour,
       body: Commonui(
         child: Center(
@@ -127,7 +149,30 @@ class _OTPPageState extends State<OTPPage> {
                         color: Colours.black,
                       ),
                     ),
+
                     const SizedBox(height: 30),
+
+                    Opacity(
+                      opacity: 0.01,
+                      child: SizedBox(
+                        height: 1,
+                        // child: TextField(
+                        //   controller: _otpController,
+                        //   focusNode: _hiddenFocus,
+                        //   keyboardType: TextInputType.number,
+                        //   autofillHints: const [AutofillHints.oneTimeCode],
+                        //   style: const TextStyle(fontSize: 1),
+                        //   decoration: const InputDecoration(
+                        //     border: InputBorder.none,
+                        //     contentPadding: EdgeInsets.zero,
+                        //   ),
+                        //   onChanged: (value) {
+                        //     _handleAutoFill(value);
+                        //   },
+                        // ),
+                      ),
+                    ),
+                    
                     _buildOTPInputGrid(),
                     const SizedBox(height: 20),
                     Text(
@@ -264,32 +309,51 @@ class _OTPPageState extends State<OTPPage> {
     );
   }
 
-  Widget _buildOTPInputGrid() {
-    final isSmallScreen = MediaQuery.of(context).size.width < 600;
-    final boxSize = isSmallScreen ? 55.0 : 60.0;
+  
 
+  Widget _buildOTPInputGrid() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(
         4,
         (index) => SizedBox(
-          width: boxSize,
-          height: boxSize,
+          width: 50,
+          height: 50,
           child: TextField(
             controller: otpControllers[index],
             focusNode: focusNodes[index],
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
-            maxLength: 1,
+            textInputAction: TextInputAction.next,
+            maxLength: 4,
+
             onChanged: (value) {
-              if (value.isNotEmpty && index < 3) {
-                FocusScope.of(context)
-                    .requestFocus(focusNodes[index + 1]);
-              } else if (value.isEmpty && index > 0) {
-                FocusScope.of(context)
-                    .requestFocus(focusNodes[index - 1]);
+              // 🔥 HANDLE FULL OTP PASTE (MAIN FIX)
+              if (value.length > 1) {
+                String code = value.replaceAll(RegExp(r'[^0-9]'), '');
+                code = code.padLeft(4, '0');
+
+                for (int i = 0; i < 4; i++) {
+                  otpControllers[i].text = code[i];
+                }
+
+                FocusScope.of(context).unfocus(); // ✅ HIDE KEYBOARD
+                return;
               }
+
+              // 🔥 NORMAL TYPING
+                if (value.isNotEmpty) {
+                  if (index < 3) {
+                    FocusScope.of(context).requestFocus(focusNodes[index + 1]);
+                  } else {
+                    // ✅ LAST BOX → HIDE KEYBOARD
+                    FocusScope.of(context).unfocus();
+                  }
+                } else if (value.isEmpty && index > 0) {
+                  FocusScope.of(context).requestFocus(focusNodes[index - 1]);
+                }
             },
+
             decoration: InputDecoration(
               counterText: '',
               filled: true,

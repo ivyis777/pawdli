@@ -32,303 +32,303 @@ class _AdoptionViewListState extends State<AdoptionViewList> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    Widget build(BuildContext context) {
+      final screenWidth = MediaQuery.of(context).size.width;
+      final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colours.secondarycolour,
+      return Scaffold(
+        backgroundColor: Colours.secondarycolour,
 
-  floatingActionButton: FloatingActionButton(
-    backgroundColor: Colours.brownColour,
-    child: const Icon(Icons.add, color: Colors.white),
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>  AddPetAdoption(),
-        ),
-      );
-    },
-  ),
-      body: Stack(
-        children: [
-          Container(
-            width: screenWidth * 0.55,
-            height: screenHeight * 0.10,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(Assets.images.topimage.path),
-                fit: BoxFit.cover,
+    floatingActionButton: FloatingActionButton(
+      backgroundColor: Colours.brownColour,
+      child: const Icon(Icons.add, color: Colors.white),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>  AddPetAdoption(),
+          ),
+        );
+      },
+    ),
+        body: Stack(
+          children: [
+            Container(
+              width: screenWidth * 0.55,
+              height: screenHeight * 0.10,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(Assets.images.topimage.path),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Column(
-            children: [
-              AppBar(
-                title: Text(
-                  'Adoptions',
-                  style: TextStyle(
-                    fontSize: screenHeight * 0.035,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: FontFamily.Cairo,
-                    color: Colours.brownColour,
-                  ),
-                ),
-                foregroundColor: Colours.brownColour,
-                centerTitle: true,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-              ),
-              Expanded(
-                child: Obx(() {
-                  if (_controller.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (_controller.adoptionPets.isEmpty) {
-                    return const Center(child: Text("No pets found."));
-                  }
-
-          
-                  final sortedPets = [..._controller.adoptionPets];
-sortedPets.sort((a, b) {
-  final aSold = a.isSoldout ?? false;
-  final bSold = b.isSoldout ?? false;
-  if (aSold == bSold) return 0;
-  return aSold ? 1 : -1;
-});
-
-return ListView.builder(
-  itemCount: sortedPets.length,
-  itemBuilder: (context, index) {
-    final pet = sortedPets[index];
-                      final backgroundImage = index.isEven
-                          ? Assets.images.yellowcard.path
-                          : Assets.images.browncard.path;
-
-                      return buildPetCard(
-                        context,
-                        screenWidth,
-                        screenHeight,
-                        pet,
-                        backgroundImage,
-                      );
-                    },
-                  );
-                }),
-              ),
-            ],
-          ),
-        ],
-      ),
-      
-    );
-  }
-
-  String _calculateAgeFromDob(String dobRaw) {
-  try {
-    final dob = DateTime.parse(dobRaw);
-    final now = DateTime.now();
-
-    int years = now.year - dob.year;
-    int months = now.month - dob.month;
-
-    if (now.day < dob.day) months--;
-    if (months < 0) {
-      years--;
-      months += 12;
-    }
-
-    return "${years}y ${months}m";
-  } catch (_) {
-    return "N/A";
-  }
-}
-
-Widget buildPetCard(
-  BuildContext context,
-  double screenWidth,
-  double screenHeight,
-  ViewAdoptionPet pet,
-  String backgroundImage,
-) {
-  final bool isSold = pet.isSoldout == true;
-
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 10),
-    child: IgnorePointer( // Freezes the card if sold
-      ignoring: isSold,
-      child: Opacity(
-        opacity: isSold ? 0.6 : 1.0, // Visually dim card if sold
-        child: GestureDetector(
-          onTap: () {
-            final petId = pet.id;
-            final petProfileImage = pet.petProfileImage;
-            if (petId != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AdoptionDescriptionPage(
-                    Id: petId,
-                    petProfileImage: petProfileImage ?? '',
-                  ),
-                ),
-              );
-            } else {
-              Get.snackbar("Error", "Pet ID is missing.");
-            }
-          },
-          child: Stack(
-            children: [
-              Container(
-                width: screenWidth,
-                height: screenHeight * 0.20,
-                child: Image.asset(
-                  backgroundImage,
-                  fit: BoxFit.fill,
-                ),
-              ),
-              if (isSold)
-      Positioned(
-        top: 8,
-        right: 8,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.redAccent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            'SOLD OUT',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: screenWidth * 0.035,
-              fontWeight: FontWeight.bold,
-              fontFamily: FontFamily.Cairo,
-            ),
-          ),
-        ),
-      ),
-              Positioned(
-                left: screenWidth * 0.07,
-                top: screenHeight * 0.015,
-                right: screenWidth * 0.30,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-  children: [
-    // ✅ LEFT: PET NAME (or mobile if you want)
-    Text(
-      pet.name,
-      style: TextStyle(
-        color: Colours.secondarycolour,
-        fontFamily: FontFamily.Cairo,
-        fontSize: screenWidth * 0.055,
-        fontWeight: FontWeight.w600,
-      ),
-    ),
-
-    SizedBox(width: screenWidth * 0.04),
-
-    // ✅ RIGHT: AGE (ONLY ONCE)
-    Text(
-      pet.ageDetails != null
-          ? "Age | ${pet.ageDetails!.years ?? 0}y "
-            "${pet.ageDetails!.months ?? 0}m "
-            "${pet.ageDetails!.days ?? 0}d"
-          : pet.dateOfBirth != null && pet.dateOfBirth!.isNotEmpty
-              ? "Age | ${_calculateAgeFromDob(pet.dateOfBirth!)}"
-              : "Age | N/A",
-      style: TextStyle(
-        color: Colours.secondarycolour,
-        fontFamily: FontFamily.Cairo,
-        fontSize: screenWidth * 0.04,
-        fontWeight: FontWeight.w600,
-      ),
-    ),
-  ],
-),
-
-                    Text(
-                      pet.isFree == true
-                          ? "Type: Free"
-                          : pet.isPaid == true
-                              ? "Type: Paid"
-                              : "Type: Not specified",
-                      style: TextStyle(
-                        color: Colours.secondarycolour,
-                        fontFamily: FontFamily.Cairo,
-                        fontSize: screenWidth * 0.042,
-                        fontWeight: FontWeight.w600,
-                      ),
+            Column(
+              children: [
+                AppBar(
+                  title: Text(
+                    'Adoptions',
+                    style: TextStyle(
+                      fontSize: screenHeight * 0.035,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: FontFamily.Cairo,
+                      color: Colours.brownColour,
                     ),
-                    const SizedBox(height: 3),
-                    Text(
-                      pet.description ?? "No description",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colours.secondarycolour,
-                        fontFamily: FontFamily.Cairo,
-                        fontSize: screenWidth * 0.045,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Row(
-                      children: [
-                        Icon(Icons.location_on, size: screenWidth * 0.06, color: Colours.secondarycolour),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            pet.location ?? "Unknown",
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                  ),
+                  foregroundColor: Colours.brownColour,
+                  centerTitle: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                ),
+                Expanded(
+                  child: Obx(() {
+                    if (_controller.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (_controller.adoptionPets.isEmpty) {
+                      return const Center(child: Text("No pets found."));
+                    }
+
+            
+                    final sortedPets = [..._controller.adoptionPets];
+                      sortedPets.sort((a, b) {
+                        final aSold = a.isSoldout ?? false;
+                        final bSold = b.isSoldout ?? false;
+                        if (aSold == bSold) return 0;
+                        return aSold ? 1 : -1;
+                      });
+
+                      return ListView.builder(
+                        itemCount: sortedPets.length,
+                        itemBuilder: (context, index) {
+                          final pet = sortedPets[index];
+                                            final backgroundImage = index.isEven
+                                                ? Assets.images.yellowcard.path
+                                                : Assets.images.browncard.path;
+
+                                            return buildPetCard(
+                                              context,
+                                              screenWidth,
+                                              screenHeight,
+                                              pet,
+                                              backgroundImage,
+                                            );
+                                          },
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            
+                          );
+                        }
+
+                        String _calculateAgeFromDob(String dobRaw) {
+                        try {
+                          final dob = DateTime.parse(dobRaw);
+                          final now = DateTime.now();
+
+                          int years = now.year - dob.year;
+                          int months = now.month - dob.month;
+
+                          if (now.day < dob.day) months--;
+                          if (months < 0) {
+                            years--;
+                            months += 12;
+                          }
+
+                          return "${years}y ${months}m";
+                        } catch (_) {
+                          return "N/A";
+                        }
+                      }
+
+                      Widget buildPetCard(
+                        BuildContext context,
+                        double screenWidth,
+                        double screenHeight,
+                        ViewAdoptionPet pet,
+                        String backgroundImage,
+                      ) {
+                        final bool isSold = pet.isSoldout == true;
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: IgnorePointer(
+                            ignoring: isSold,
+                            child: Opacity(
+                              opacity: isSold ? 0.6 : 1.0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  final petId = pet.id;
+                                  final petProfileImage = pet.petProfileImage;
+                                  if (petId != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AdoptionDescriptionPage(
+                                          Id: petId,
+                                          petProfileImage: petProfileImage ?? '',
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    Get.snackbar("Error", "Pet ID is missing.");
+                                  }
+                                },
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: screenWidth,
+                                      height: screenHeight * 0.20,
+                                      child: Image.asset(
+                                        backgroundImage,
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                    if (isSold)
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  'SOLD OUT',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: screenWidth * 0.035,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: FontFamily.Cairo,
+                                  ),
+                                ),
+                              ),
+                            ),
+                                    Positioned(
+                                      left: screenWidth * 0.07,
+                                      top: screenHeight * 0.015,
+                                      right: screenWidth * 0.35,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            pet.name,
+                            style: TextStyle(
+                              color: Colours.secondarycolour,
+                              fontFamily: FontFamily.Cairo,
+                              fontSize: screenWidth * 0.055,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+
+                          SizedBox(width: screenWidth * 0.04),
+
+                          Text(
+                            pet.ageDetails != null
+                                ? "Age | ${pet.ageDetails!.years ?? 0}y "
+                                  "${pet.ageDetails!.months ?? 0}m "
+                                  "${pet.ageDetails!.days ?? 0}d"
+                                : pet.dateOfBirth != null && pet.dateOfBirth!.isNotEmpty
+                                    ? "Age | ${_calculateAgeFromDob(pet.dateOfBirth!)}"
+                                    : "Age | N/A",
                             style: TextStyle(
                               color: Colours.secondarycolour,
                               fontFamily: FontFamily.Cairo,
                               fontSize: screenWidth * 0.04,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            if (pet.petProfileImage != null && pet.petProfileImage!.isNotEmpty)
-  Positioned(
-    right: screenWidth * 0.06,
-    bottom: screenHeight * 0.022,
-    child: CircleAvatar(
-      radius: screenWidth * 0.15,
-      backgroundColor: Colors.grey.shade200,
-      backgroundImage: CachedNetworkImageProvider(pet.petProfileImage!),
-      onBackgroundImageError: (_, __) {}, // prevent crash
-    ),
-  )
-else
-  Positioned(
-    right: screenWidth * 0.06,
-    bottom: screenHeight * 0.022,
-    child: CircleAvatar(
-      radius: screenWidth * 0.15,
-      backgroundColor: Colors.grey.shade200,
-      child: Icon(
-        Icons.pets, // fallback icon 🐾
-        size: screenWidth * 0.12,
-        color: Colours.brownColour,
-      ),
-    ),
-  ),
+                        ],
+                      ),
 
-            ],
+                      Text(
+                        pet.isFree == true
+                            ? "Type: Free"
+                            : pet.isPaid == true
+                                ? "Type: Paid"
+                                : "Type: Not specified",
+                        style: TextStyle(
+                          color: Colours.secondarycolour,
+                          fontFamily: FontFamily.Cairo,
+                          fontSize: screenWidth * 0.042,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      SizedBox(
+                        width: screenWidth * 0.55,
+                        child: Text(
+                          pet.description ?? "No description",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colours.secondarycolour,
+                            fontFamily: FontFamily.Cairo,
+                            fontSize: screenWidth * 0.045,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, size: screenWidth * 0.06, color: Colours.secondarycolour),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              pet.location ?? "Unknown",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colours.secondarycolour,
+                                fontFamily: FontFamily.Cairo,
+                                fontSize: screenWidth * 0.04,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              if (pet.petProfileImage != null && pet.petProfileImage!.isNotEmpty)
+                Positioned(
+                  right: screenWidth * 0.06,
+                  bottom: screenHeight * 0.022,
+                  child: CircleAvatar(
+                    radius: screenWidth * 0.12,
+                    backgroundColor: Colors.grey.shade200,
+                    backgroundImage: CachedNetworkImageProvider(pet.petProfileImage!),
+                    onBackgroundImageError: (_, __) {}, // prevent crash
+                  ),
+                )
+              else   
+                Positioned(
+                  right: screenWidth * 0.06,
+                  bottom: screenHeight * 0.022,
+                  child: CircleAvatar(
+                    radius: screenWidth * 0.12,
+                    backgroundColor: Colors.grey.shade200,
+                    child: Icon(
+                      Icons.pets, // fallback icon 🐾
+                      size: screenWidth * 0.12,
+                      color: Colours.brownColour,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

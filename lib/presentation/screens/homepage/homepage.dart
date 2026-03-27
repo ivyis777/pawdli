@@ -866,7 +866,7 @@ Positioned(
                 style: TextStyle(
                   color: Colours.black, // Use a contrasting color for visibility
                   fontFamily: FontFamily.Cairo,
-                  fontSize: screenWidth * 0.08,
+                  fontSize: screenWidth * 0.07,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -876,7 +876,7 @@ Positioned(
                 style: TextStyle(
                   color: Colours.black, // Slightly transparent white
                   fontFamily: FontFamily.Cairo,
-                  fontSize: screenWidth * 0.06,
+                  fontSize: screenWidth * 0.055,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -1052,7 +1052,7 @@ Positioned(
               style: TextStyle(
                 color: Colours.black, // Use a contrasting color for visibility
                 fontFamily: FontFamily.Cairo,
-                fontSize: screenWidth * 0.08,
+                fontSize: screenWidth * 0.07,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1062,7 +1062,7 @@ Positioned(
               style: TextStyle(
                 color: Colours.black, // Slightly transparent white
                 fontFamily: FontFamily.Cairo,
-                fontSize: screenWidth * 0.06,
+                fontSize: screenWidth * 0.055,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -1128,7 +1128,7 @@ Positioned(
                 style: TextStyle(
                   color: Colours.secondarycolour, // Use a contrasting color for visibility
                   fontFamily: FontFamily.Cairo,
-                  fontSize: screenWidth * 0.08,
+                  fontSize: screenWidth * 0.07,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1138,7 +1138,7 @@ Positioned(
                 style: TextStyle(
                   color: Colours.secondarycolour, // Slightly transparent white
                   fontFamily: FontFamily.Cairo,
-                  fontSize: screenWidth * 0.06,
+                  fontSize: screenWidth * 0.055,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -1165,19 +1165,23 @@ Positioned(
 Padding(
   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.001, vertical: screenHeight * 0.01),
   child: GestureDetector(
-                       onTap: () {
-  // Navigate first
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => PodcastScreen()),
-  ).then((_) {
-    // Use addPostFrameCallback to perform actions after the frame is rendered
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Here you can perform updates like calling setState or modifying observables
-      print('Card tapped');
-    });
-  });
-},
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Coming Soon"),
+              content: Text("Pet Podcast feature will be available soon!"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
+      },
   child: Stack(
     children: [
       // Background image
@@ -1203,7 +1207,7 @@ Padding(
               style: TextStyle(
                 color: Colours.black, // Use a contrasting color for visibility
                 fontFamily: FontFamily.Cairo,
-                fontSize: screenWidth * 0.08,
+                fontSize: screenWidth * 0.07,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1213,7 +1217,7 @@ Padding(
               style: TextStyle(
                 color: Colours.black, // Slightly transparent white
                 fontFamily: FontFamily.Cairo,
-                fontSize: screenWidth * 0.06,
+                fontSize: screenWidth * 0.055,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -1223,12 +1227,11 @@ Padding(
 
       // Cat image in position
       Positioned(
-        right: screenWidth * -0.10, // Adjust the horizontal position
+        right: screenWidth * -0.062, // Adjust the horizontal position
         bottom: screenHeight * -0.012, // Adjust the vertical position
         child: Image.asset(
              'assets/images/Pet_Podcast1.png',
-        
-       width: screenWidth * 0.55, // Adjust width
+          width: screenWidth * 0.6, // Adjust width
           height: screenHeight * 0.28, // Adjust height
           fit: BoxFit.fill, 
         ),
@@ -1282,7 +1285,7 @@ Padding(
                 style: TextStyle(
                   color: Colours.secondarycolour, // Use a contrasting color for visibility
                   fontFamily: FontFamily.Cairo,
-                  fontSize: screenWidth * 0.08,
+                  fontSize: screenWidth * 0.07,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1293,7 +1296,7 @@ Padding(
               style: TextStyle(
                 color: Colours.secondarycolour, // Slightly transparent white
                 fontFamily: FontFamily.Cairo,
-                fontSize: screenWidth * 0.05,
+                fontSize: screenWidth * 0.055,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -1303,7 +1306,7 @@ Padding(
     
         // Cat image in position
         Positioned(
-           right: screenWidth * -0.06, // Adjust the horizontal position
+           right: screenWidth * -0.12, // Adjust the horizontal position
           bottom: screenHeight * -0.03, /// Adjust the vertical position
           child: Image.asset(
                   'assets/images/MeetAVet .png',
@@ -1433,7 +1436,7 @@ Padding(
                   style: TextStyle(
                     color: Colours.brownColour,
                     fontFamily: FontFamily.Cairo,
-                    fontSize: screenWidth * 0.06,
+                    fontSize: screenWidth * 0.05,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
